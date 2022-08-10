@@ -7,5 +7,5 @@ namespace ceal {
 
 	struct AudioFile_Wav;
 
-	CealResult CreateAudioBuffer(AudioBufferID* audioBufferId, const AudioFile_Wav* audioFile);
+	CealResult CreateAudioBuffer(Buffer_T* audioBufferId, const AudioFile_Wav* audioFile);
 }

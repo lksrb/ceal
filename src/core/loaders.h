@@ -21,6 +21,7 @@ namespace ceal {
 		// if not PCM
 		uint16_t ExtraParamSize;
 
+		// Data
 		uint32_t DataSize;
 		uint8_t* Data;
 

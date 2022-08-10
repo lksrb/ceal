@@ -2,6 +2,7 @@
 #if defined _WIN32 || defined _WIN64
 
 #include "win32_core.h"
+#include "../core/loaders.h"
 
 namespace ceal {
 
@@ -25,13 +26,13 @@ namespace ceal {
 
 	CealResult DestroyContext()
 	{
-		// Releasing buffers
-		for (const auto& buffer : g_CealContext->XBuffers) {
+		// Release buffers
+		for (const auto&[id, buffer] : g_CealContext->XBufferMap) {
 			delete buffer.pAudioData;
 		}
 
-		// Releasing source voices
-		for (auto sourceVoice : g_CealContext->XSourceVoices) {
+		// Release source voices
+		for (const auto& [id, sourceVoice] : g_CealContext->XSourceVoiceMap) {
 			sourceVoice->Stop();
 			sourceVoice->DestroyVoice();
 		}
@@ -42,6 +43,57 @@ namespace ceal {
 		delete g_CealContext;
 
 		return CealResult::CealSuccess;
+	}
+
+	CealResult CreateSource(Source_T* sourceId, const AudioFile_Wav* audioFile)
+	{
+		(*sourceId) = static_cast<Buffer_T>(g_CealContext->GlobalIncrementId++);
+
+		WAVEFORMATEX wfx = { 0 };
+		wfx.wFormatTag = WAVE_FORMAT_PCM;
+		wfx.nChannels = audioFile->NumChannels;
+		wfx.nSamplesPerSec = audioFile->SampleRate;
+		wfx.wBitsPerSample = audioFile->BitsPerSample;
+		wfx.cbSize = audioFile->ExtraParamSize;
+		wfx.nBlockAlign = audioFile->BlockAlign;
+		wfx.nAvgBytesPerSec = audioFile->ByteRate;
+
+		// Create Source Voice
+		auto pSourceVoice = &g_CealContext->XSourceVoiceMap[*sourceId];
+		CEAL_CHECK_XA2(g_CealContext->XInstance->CreateSourceVoice(pSourceVoice, &wfx));
+
+		return CealResult::CealSuccess;
+	}
+
+	// Submits buffer to a source queue.
+	CealResult SubmitBuffer(const Source_T sourceId, const Buffer_T bufferId)
+	{
+		const auto& buffer = g_CealContext->XBufferMap[bufferId];
+		const auto& pSource = g_CealContext->XSourceVoiceMap[sourceId];
+		// Submitting buffer
+		CEAL_CHECK_XA2(pSource->SubmitSourceBuffer(&buffer));
+
+		return CealResult::CealSuccess;
+	}
+
+	CealResult Play(const Source_T sourceId)
+	{
+		const auto& pSource = g_CealContext->XSourceVoiceMap[sourceId];
+		// Playing audio
+		CEAL_CHECK_XA2(pSource->Start());
+
+		return CealResult::CealSuccess;
+	}
+
+	CealResult SetVolume(const Source_T sourceId, float volume)
+	{
+		if (volume >= 0.0f) {
+			const auto& pSource = g_CealContext->XSourceVoiceMap[sourceId];
+			CEAL_CHECK_XA2(pSource->SetVolume(volume));
+			return CealResult::CealSuccess;
+		}
+
+		return CealResult::CealInvalidValue;
 	}
 }
 

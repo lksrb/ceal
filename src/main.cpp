@@ -7,6 +7,7 @@
 
 #include <xaudio2.h>
 #include <assert.h>
+#include <conio.h>
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -34,11 +35,55 @@ int main()
 		ceal::AudioFile_Wav audioFile;
 		CEAL_ASSERT(ceal::LoadAudioFile_Wav("testing/file_example_WAV_2MG.wav", &audioFile), "Failed to load file!");
 
-		ceal::AudioBufferID audioId;
+		ceal::Buffer_T audioId;
+		ceal::Source_T sourceId;
 
 		ceal::CreateAudioBuffer(&audioId, &audioFile);
+		ceal::CreateSource(&sourceId, &audioFile);
+		ceal::SetVolume(sourceId, 0.05f);
 
-		std::cin.get();
+		ceal::SubmitBuffer(sourceId, audioId);
+
+		ceal::Play(sourceId); 
+
+		bool runForever = true;
+		while (runForever) {
+			char c;
+
+			static float volume = 0.05f;
+
+			std::cout << "What would you like to do?\n";
+			std::cout << "(e) Exit\n";
+			std::cout << "(+) Increase volume\n";
+			std::cout << "(-) Decrease volume\n";
+
+			c = _getch();
+			switch (c)
+			{
+				case 'e': 
+				{
+					runForever = false;
+					break; 
+				}
+				case '+': 
+				{
+					volume += 0.05f;
+					ceal::SetVolume(sourceId, volume);
+					std::cout << "Volume: " << volume << "\n";
+					break; 
+				}
+				case '-': 
+				{
+					volume -= 0.05f;
+					ceal::SetVolume(sourceId, volume);
+					std::cout << "Volume: " << volume << "\n";
+					break; 
+				}
+				default:
+					break;
+			}
+		}
+
 
 		ceal::DestroyContext();
 	}
