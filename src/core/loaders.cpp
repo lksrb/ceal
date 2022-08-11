@@ -8,7 +8,7 @@
 
 #define CEAL_RETURN_RESULT(condition, fileStream, result) if(!(condition)) { fclose(fileStream); return result; }
 
-namespace ceal {
+namespace Ceal {
 
 	// Loaders
 	CealResult LoadAudioFile_Wav(const char* filepath, AudioFile_Wav* wavFormat) {

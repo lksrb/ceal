@@ -1,9 +1,13 @@
 #pragma once
 
 #include "common.h"
-
 // Client API code
-namespace ceal {
+/**
+ * 
+ * 
+ * 
+ */
+namespace Ceal {
 
 	struct AudioFile_Wav;
 
@@ -15,9 +19,17 @@ namespace ceal {
 		float ListenerOrientation[6] = { 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f };
 	};
 
+	struct AudioListenerConfigV2
+	{
+		float Position[3];
+		float Velocity[3];
+		float OrientFront[3];
+		float OrientTop[3];
+	};
+
 	struct AudioSourceConfig
 	{
-		float Position[3] = { 0.0f, 0.0f, 1.0f };
+		float Position[3] = { 0.0f, 0.0f, 0.0f };
 		float Velocity[3] = { 0.0f, 0.0f, 0.0f };
 		float Gain = 1.0f;
 		float Pitch = 1.0f;
@@ -42,4 +54,15 @@ namespace ceal {
 
 	// Volume configuration
 	CealResult SetVolume(const Source_T sourceId, float volume);
+
+	// Listener/Source relationship used in game
+	 
+	// Audio Listener
+	void ConfigureAudioListener(const AudioListenerConfigV2* config);
+
+	// Audio Source
+	void ConfigureAudioSource(const Source_T sourceid, const AudioSourceConfig* config);
+
+	// Internal
+	void Update(const Source_T sourceId);
 }

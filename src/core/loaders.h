@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-namespace ceal {
+namespace Ceal {
 
 	/*
 		Based on http://soundfile.sapp.org/doc/WaveFormat/

@@ -9,16 +9,16 @@
 
 #include <unordered_map>
 
-namespace ceal {
+namespace Ceal {
 
 	extern CealContext* g_CealContext;
 
-	CealResult CreateAudioBuffer(Buffer_T* audioBufferId, const AudioFile_Wav* audioFile)
+	CealResult CreateBuffer(Buffer_T* bufferId, const AudioFile_Wav* audioFile)
 	{
-		(*audioBufferId) = static_cast<Buffer_T>(g_CealContext->GlobalIncrementId++);
+		bufferId->ID = g_CealContext->GlobalIncrementId++;
 
 		// Populating XAUDIO2_BUFFER structure
-		auto& buffer = g_CealContext->XBufferMap[*audioBufferId];
+		auto& buffer = g_CealContext->XBufferMap[*bufferId];
 		buffer.AudioBytes = audioFile->DataSize;	// Size of the audio buffer in bytes
 		buffer.pAudioData = audioFile->Data;		// Buffer containing audio data
 		buffer.Flags = XAUDIO2_END_OF_STREAM;		// Tell the source voice not to expect any data after this buffer
