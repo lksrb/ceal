@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stdint.h>
-#include <vcruntime_string.h>
+#include <stdint.h> // uint32_t
+#include <vcruntime_string.h> // memset, ...
 
 namespace Ceal {
 	

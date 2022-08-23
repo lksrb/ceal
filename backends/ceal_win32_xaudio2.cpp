@@ -1,5 +1,7 @@
-// Windows API core
-#if defined _WIN32
+// =============================================================================
+//					   XAudio2-Windows Backend Implementation
+// =============================================================================
+#ifdef _WIN32
 
 #include "ceal_win32_xaudio2.h"
 
@@ -7,7 +9,6 @@
 #include "ceal_debug.h"
 
 #include <math.h>
-#include <iostream>
 
 #include <chrono>
 #include <thread>
@@ -20,6 +21,8 @@
 #ifdef _MSC_VER
     #define CEAL_ASSERT(condition) if((condition) == false) { __debugbreak(); }
     #define CEAL_PASS(condition) if((condition)) { __debugbreak(); }
+    #define CEAL_CHECK_XA2(x) { HRESULT hr = (x); if(hr != S_OK) { return Ceal::Result_Failed;  }  }
+    #define CEAL_ASSERT_XA2(x) { HRESULT hr = (x); if(hr != S_OK) { __debugbreak();  }  }
 #endif
 
 #define LEFT_AZIMUTH            3 * X3DAUDIO_PI / 2
@@ -64,21 +67,21 @@ static constexpr float s_ChannelAzimuths[9][8] =
 
 namespace Ceal {
 
-    // Debugger
-    // Debugger
-    // Debugger
+// =============================================================================
+//					         Class implementations
+// =============================================================================
 
-	void ContextDebugger::OnProcessingPassEnd() {}
-	void ContextDebugger::OnProcessingPassStart() {}
+    void XAudio2DebuggerCallback::OnProcessingPassEnd() 
+    {
+    }
+	void XAudio2DebuggerCallback::OnProcessingPassStart() 
+    {
+    }
 
-	void ContextDebugger::OnCriticalError(HRESULT error)
-{
-		std::cout << "On Critical Error: " << error;
+	void XAudio2DebuggerCallback::OnCriticalError(HRESULT error)
+    {
+        printf("Critical Error: %d", error);
 	}
-
-    // SourceVoiceCallback
-    // SourceVoiceCallback
-    // SourceVoiceCallback
 
     SourceVoiceCallback::SourceVoiceCallback(SourceDetails* sourceDetails)
         : m_SourceDetails(sourceDetails), m_BufferEndEvent(CreateEvent(NULL, FALSE, FALSE, NULL))
@@ -116,13 +119,9 @@ namespace Ceal {
         printf("OnVoiceError: %d \n", error);
     }
 
-}
-namespace Ceal {
-
 // =============================================================================
 //					  Functions for internal use only.
 // =============================================================================
-
 	namespace Internal {
 
 		/**
@@ -362,6 +361,9 @@ namespace Ceal {
 	{
 		CEAL_ASSERT(g_CealContext == nullptr);
 
+#ifdef CEAL_DEBUG 
+        Debug::Inititialize();
+#endif
 		g_CealContext = new CealContext;
 
 		// Create COM

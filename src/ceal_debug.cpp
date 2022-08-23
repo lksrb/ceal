@@ -4,7 +4,11 @@
 #include <chrono>
 #include <iostream>
 
-namespace Ceal {
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+
+namespace Ceal 
+{
     ScopedTimer::ScopedTimer(const char* name, bool output /*= true*/)
         : m_Name(name), m_Output(output)
     {
@@ -28,6 +32,18 @@ namespace Ceal {
         float elapsedms = ElapsedMs();
 
         std::cout << m_Name << " took " << elapsedms << " ms\n";
+    }
+
+    void Debug::Inititialize()
+    {
+        // Checking memory leaks
+        _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+        _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
+        _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
+        _CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDOUT);
+        _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
+        _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDOUT);
+        _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     }
 
 }

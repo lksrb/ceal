@@ -5,23 +5,18 @@
  * 
  **/
 
-// =================================> Backend <====================================
+// =================================> Backend <==================================== //
 
-#include "backends/ceal_win32_xaudio2.h"
-
+// #include "backends/ceal_win32_xaudio2.cpp" Typically you would put this into arbitrary .cpp file in your project to compile.
 #include "ceal.h"
 #include "ceal_loaders.h"
 
-// ================================================================================
+// ================================================================================ //
  
 // Ceal-ImGui showcase window
 #include "ceal_window.h"
 
 #include <iostream>
-
-// Memory leak d
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
 
 // Convenient macros for debugging
 #define ASSERT(condition, msg) if((condition) == Ceal::Result_Failed) { std::cerr << msg << "\n"; __debugbreak(); }
@@ -52,20 +47,9 @@ static Ceal::Buffer_T s_SongBufferStereo;
 
 int main()
 {
-    // Checking memory leaks, you can ignore this part
-    {
-        _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
-        _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
-        _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
-        _CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDOUT);
-        _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
-        _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDOUT);
-        _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    }
-
     // Creating audio context
     Ceal::ContextFlags contextFlags = Ceal::ContextFlags_None;
-    Ceal::CreateContext(contextFlags);
+    Ceal::CreateContext(contextFlags); // TODO(Urby): Figure out what next
 
     // Group is essential, you need atleast one
     Ceal::CreateGroup(&s_Group);

@@ -1,17 +1,12 @@
-/**
- * Debug utilities for CEAL
- */
-
+// =============================================================================
+//                             Debug Utilities 
+// =============================================================================
 #pragma once
 
 #include <chrono>
 
 namespace Ceal 
 {
-// =============================================================================
-//                             Debug Utilities 
-// =============================================================================
-
     class ScopedTimer
     {
     public:
@@ -27,4 +22,8 @@ namespace Ceal
         const char* m_Name;
         bool m_Output;
     };
+
+    namespace Debug {
+        void Inititialize();
+    }
 }

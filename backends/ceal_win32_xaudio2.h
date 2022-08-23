@@ -9,10 +9,7 @@
 #include <xaudio2.h>
 #include <xaudio2fx.h>
 #include <x3daudio.h>
-#pragma comment(lib,"xaudio2.lib") 
-
-#define CEAL_CHECK_XA2(x) { HRESULT hr = (x); if(hr != S_OK) { return Ceal::Result_Failed;  }  }
-#define CEAL_ASSERT_XA2(x) { HRESULT hr = (x); if(hr != S_OK) { __debugbreak();  }  }
+#pragma comment(lib,"xaudio2.lib") // TODO(Urby): Move this to .cpp file
 
 namespace Ceal {
 
@@ -22,6 +19,10 @@ namespace Ceal {
 
     struct SourceDetails;
 
+// =============================================================================
+//                                  Callbacks
+// =============================================================================
+ 
     class SourceVoiceCallback : public IXAudio2VoiceCallback
     {
     public:
@@ -46,6 +47,14 @@ namespace Ceal {
         HANDLE m_BufferEndEvent;
     };
 
+
+    class XAudio2DebuggerCallback : public IXAudio2EngineCallback
+    {
+        void OnProcessingPassEnd();
+        void OnProcessingPassStart();
+        void OnCriticalError(HRESULT error);
+    };
+
     struct SourceDetails
     {
         SourceDetails() : Callback(this) {};
@@ -62,8 +71,6 @@ namespace Ceal {
         IXAudio2SourceVoice* XSourceVoice;
         SourceVoiceCallback Callback;
 
-        
-
         // Streaming
         struct StreamData_
         {
@@ -73,13 +80,6 @@ namespace Ceal {
             uint32_t BufferMaxSize;
             uint32_t BufferMaxCount;
         } StreamData;
-    };
-
-    class ContextDebugger : public IXAudio2EngineCallback
-    {
-        void OnProcessingPassEnd();
-        void OnProcessingPassStart();
-        void OnCriticalError(HRESULT error);
     };
 
     struct GroupDetails
@@ -111,7 +111,7 @@ namespace Ceal {
 
         ContextFlags Flags;                                         // Context Flags
 
-        ContextDebugger Debugger;                                   // Debugging
+        XAudio2DebuggerCallback Debugger;                                   // Debugging
 
         // Multithreading
         bool IsClosing;

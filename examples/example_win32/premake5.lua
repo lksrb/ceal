@@ -16,6 +16,8 @@ project "example_win32"
 	files {
 		"../../src/*.h",
 		"../../src/*.cpp",
+		"../../backends/ceal_win32_xaudio2.h",
+		"../../backends/ceal_win32_xaudio2.cpp",
 		"**.h",
 		"**.cpp",
 		"../libs/ceal_window/**.h",
