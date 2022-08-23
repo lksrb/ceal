@@ -3,6 +3,7 @@ bin-obj/
 
 # Visual Studio files and folder
 .vs/
+**.editorconfig
 **.sln
 **.vcxproj
 **.vcxproj.filters

@@ -12,15 +12,20 @@ workspace "CEAL"
 		"Release",
 	}
 
+    solution_items
+	{
+		".editorconfig"
+	}
 	flags
 	{
-		"MultiProcessorCompile"
+		"MultiProcessorCompile", 
+        "Documentation"
 	}
 
 --CEAL Project
 
 project "CEAL"
-	kind "ConsoleApp"
+	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
 	callingconvention "FastCall"
@@ -42,8 +47,6 @@ project "CEAL"
 	includedirs {
 		"src",
 	}
-	links {
-	}
 
 	filter "system:windows"
 		systemversion "latest"
@@ -60,4 +63,4 @@ project "CEAL"
 		filter "configurations:Release"
 			defines "CEAL_RELEASE"
 			runtime "Release"
-			optimize "on"
+			optimize "on"        
