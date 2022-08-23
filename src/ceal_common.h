@@ -29,8 +29,8 @@ namespace Ceal {
 		float Y;
 		float Z;
 
-		CealVector3(float x, float y, float z) : X(x), Y(y), Z(z) {}
-		CealVector3(float* arrayf) : X(arrayf[0]), Y(arrayf[1]), Z(arrayf[2]) {}
+		constexpr CealVector3(float x, float y, float z) : X(x), Y(y), Z(z) {}
+		constexpr CealVector3(float* arrayf) : X(arrayf[0]), Y(arrayf[1]), Z(arrayf[2]) {}
 	};
 
 	enum Result_ : uint32_t 
@@ -93,13 +93,41 @@ namespace Ceal {
 	typedef uint32_t SourceAttribute; // => SourceAttribute_ 
 	typedef uint32_t Result; // => Result_
 	typedef uint32_t ListenerAttribute; // => ListenerAttribute_
+
+    /**
+     * @brief Holds info about Wav audio
+     * @see http://soundfile.sapp.org/doc/WaveFormat/
+     */
+    struct AudioFile_Wav
+    {
+        uint32_t ChunkSize;
+
+        uint32_t FmtSize; // 16 for PCM
+        uint16_t AudioFormat;
+        uint16_t NumChannels;
+        uint32_t SampleRate;
+        uint32_t ByteRate;
+        uint16_t BlockAlign;
+        uint16_t BitsPerSample;
+
+        // if not PCM
+        uint16_t ExtraParamSize;
+
+        // Data
+        uint32_t DataSize;
+        uint32_t DataOffset;
+        uint8_t* Data;
+
+        AudioFile_Wav()
+        {
+            memset(this, 0, sizeof(AudioFile_Wav));
+        }
+    };
 }
 
 // =============================================================================
 //					                 Macros
 // =============================================================================
  
-#define CEAL_ASSERT(condition) if((condition) == false) { __debugbreak(); }
-#define CEAL_PASS(condition) if((condition)) { __debugbreak(); }
 #define CEAL_INVALID_ID 0
 

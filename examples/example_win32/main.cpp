@@ -1,4 +1,5 @@
 /*
+ *
  * CEAL Windows example. 
  * This file serves purpose as a showcase for my library. Not the best implementation in the world but 
  * 
@@ -6,9 +7,10 @@
 
 // =================================> Backend <====================================
 
-#include "backends/ceal_win32_xaudio2.cpp"
-#include "ceal_loaders.cpp"
-#include "ceal_debug.cpp"
+#include "backends/ceal_win32_xaudio2.h"
+
+#include "ceal.h"
+#include "ceal_loaders.h"
 
 // ================================================================================
  
@@ -25,7 +27,6 @@
 #define ASSERT(condition, msg) if((condition) == Ceal::Result_Failed) { std::cerr << msg << "\n"; __debugbreak(); }
 
 // Definitions
-
 void CealDemoDraw();
 
 struct ListenerAttributes3D

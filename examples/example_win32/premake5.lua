@@ -14,6 +14,8 @@ project "example_win32"
 	objdir (outputdir)
 
 	files {
+		"../../src/*.h",
+		"../../src/*.cpp",
 		"**.h",
 		"**.cpp",
 		"../libs/ceal_window/**.h",

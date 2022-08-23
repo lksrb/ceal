@@ -1,5 +1,5 @@
 // Windows API core
-#if defined _WIN32 || defined _WIN64
+#if defined _WIN32
 
 #include "ceal_win32_xaudio2.h"
 
@@ -16,7 +16,12 @@
 //					                 Macros
 // =============================================================================
 
-// TODO(Urby): Clean this up
+// MSVC only
+#ifdef _MSC_VER
+    #define CEAL_ASSERT(condition) if((condition) == false) { __debugbreak(); }
+    #define CEAL_PASS(condition) if((condition)) { __debugbreak(); }
+#endif
+
 #define LEFT_AZIMUTH            3 * X3DAUDIO_PI / 2
 #define RIGHT_AZIMUTH           X3DAUDIO_PI / 2
 #define FRONT_LEFT_AZIMUTH      7 * X3DAUDIO_PI / 4
@@ -52,11 +57,10 @@ static constexpr float s_ChannelAzimuths[9][8] =
 
 #define CEAL_MAX_CHANNELS 8
 
+// Helpers
 #define CEAL_CHOOSE_CHANNEL_AZIMUTHS(__input) const_cast<float*>(s_ChannelAzimuths[__input])
 #define CEAL_GROUP_AT(__groupId) g_CealContext->GroupMap.at(*__groupId)
 #define CEAL_SOURCE_AT(__sourceId) g_CealContext->SourceMap.at(*__sourceId)
-
-#define CEAL_X3DAUDIO_CALCULATE X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT | X3DAUDIO_CALCULATE_REVERB
 
 namespace Ceal {
 
