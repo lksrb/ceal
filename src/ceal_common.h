@@ -3,7 +3,7 @@
 #include <stdint.h> // uint32_t
 #include <vcruntime_string.h> // memset, ...
 
-namespace Ceal {
+namespace CEAL {
 	
 	struct Buffer_T 
 	{

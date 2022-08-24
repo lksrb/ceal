@@ -7,7 +7,7 @@
 
 #include "ceal_common.h"
 
-namespace Ceal {
+namespace CEAL {
 
 // =============================================================================
 //									  Queries

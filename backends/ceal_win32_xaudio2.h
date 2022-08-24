@@ -11,7 +11,7 @@
 #include <x3daudio.h>
 #pragma comment(lib,"xaudio2.lib") // TODO(Urby): Move this to .cpp file
 
-namespace Ceal {
+namespace CEAL {
 
 // =============================================================================
 //                             Forward declarations

@@ -1,2 +1,2 @@
-# Ceal
-Ceal is cross-platform easy-to-use audio library.
+# Cross-platform Easy to use Audio Library
+

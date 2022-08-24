@@ -72,13 +72,13 @@ static HWND s_WindowHandle;
 static WNDCLASSEX s_WindowCallEx;
 static void(*s_DrawFunction)();
 
-void Ceal::Window::RegisterImGuiCallback(void(*function)())
+void CEAL::Window::RegisterImGuiCallback(void(*function)())
 {
     s_DrawFunction = function;
 }
 
 // Main code
-void Ceal::Window::InitWindow()
+void CEAL::Window::InitWindow()
 {
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();
@@ -146,7 +146,7 @@ void Ceal::Window::InitWindow()
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != NULL);
 }
-void Ceal::Window:: Run() {
+void CEAL::Window:: Run() {
     // Our state
     bool show_demo_window = true;
     bool show_another_window = false;

@@ -7,7 +7,7 @@
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
 
-namespace Ceal 
+namespace CEAL 
 {
     ScopedTimer::ScopedTimer(const char* name, bool output /*= true*/)
         : m_Name(name), m_Output(output)

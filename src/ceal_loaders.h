@@ -5,7 +5,7 @@
 
 #include "ceal_common.h"
 
-namespace Ceal {
+namespace CEAL {
 	
 	/**
 	 * @brief Loads WAVE audio file from disk. Does allocate memory.

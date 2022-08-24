@@ -5,7 +5,7 @@
 
 #include <chrono>
 
-namespace Ceal 
+namespace CEAL 
 {
     class ScopedTimer
     {

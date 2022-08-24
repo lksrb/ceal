@@ -9,7 +9,7 @@
 
 #define CEAL_RETURN_RESULT(condition, fileStream, result) if(!(condition)) { fclose(fileStream); return result; }
 
-namespace Ceal {
+namespace CEAL {
 
     /**
      * @brief Loads WAVE audio file from disk. Does allocate memory.

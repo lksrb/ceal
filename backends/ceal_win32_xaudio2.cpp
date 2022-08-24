@@ -21,7 +21,7 @@
 #ifdef _MSC_VER
     #define CEAL_ASSERT(condition) if((condition) == false) { __debugbreak(); }
     #define CEAL_PASS(condition) if((condition)) { __debugbreak(); }
-    #define CEAL_CHECK_XA2(x) { HRESULT hr = (x); if(hr != S_OK) { return Ceal::Result_Failed;  }  }
+    #define CEAL_CHECK_XA2(x) { HRESULT hr = (x); if(hr != S_OK) { return CEAL::Result_Failed;  }  }
     #define CEAL_ASSERT_XA2(x) { HRESULT hr = (x); if(hr != S_OK) { __debugbreak();  }  }
 #endif
 
@@ -65,7 +65,7 @@ static constexpr float s_ChannelAzimuths[9][8] =
 #define CEAL_GROUP_AT(__groupId) g_CealContext->GroupMap.at(*__groupId)
 #define CEAL_SOURCE_AT(__sourceId) g_CealContext->SourceMap.at(*__sourceId)
 
-namespace Ceal {
+namespace CEAL {
 
 // =============================================================================
 //					         Class implementations
