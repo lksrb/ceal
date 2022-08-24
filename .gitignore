@@ -1,5 +1,8 @@
+# Custom CEAL
 **/bin/
 bin-obj/
+**.idb
+
 
 # Visual Studio files and folder
 .vs/
