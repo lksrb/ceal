@@ -1,8 +1,8 @@
 # Custom CEAL
 **/bin/
 bin-obj/
-**.idb
-
+examples/example_win32/Debug/**
+examples/example_win32/Release/**
 
 # Visual Studio files and folder
 .vs/
