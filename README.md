@@ -1,4 +1,4 @@
-# Cross-platform Easy to use Audio Library
+# Cross-platform Easy-to-use Audio Library
 CEAL is my personal project created for both educational and usability purposes.
 CEAL is cross-api audio library set with the goal to be fast and intuitive.
 
