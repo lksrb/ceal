@@ -5,7 +5,7 @@ CEAL is cross-api audio library set with the goal to be fast and intuitive.
 # Support
 Platform: Currently supports only **Windows 10 or higher**. Cross-platform is WIP.
 
-Langugage: Currently supports only **C++17 or higher**, backwards compatibility is WIP.
+Language: Currently supports only **C++17 or higher**, backwards compatibility is WIP.
 
 IDE: Build in Visual Studio Community 2022 using **MSVC compiler** more compiler testing is WIP.
 
