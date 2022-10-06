@@ -1,4 +1,15 @@
 # Cross-platform Easy to use Audio Library
-CEAL is  cross-api audio library with the goal to be usable, fast and intuitive. 
-Also it is my passion project created for both educational purposes and usable purposes.
+CEAL is my personal project created for both educational and usability purposes.
+CEAL is cross-api audio library set with the goal to be fast and intuitive.
+
+# Support
+Platform: Currently supports only Windows 10+. Cross-platform is WIP.
+Langugage: Currently supports only ´C++17 and higher´, backwards compatibility is WIP.
+IDE: Build in Visual Studio Community 2022 using ´MSVC compiler´, more compiler testing is WIP.
+Build with: Premake5, more build-system out-of-the-box is WIP.
+
+# API
+## XAudio2 v2.9
+XAudio2 is a closed-source low-level audio library API for Windows/Xbox only.
+
 
