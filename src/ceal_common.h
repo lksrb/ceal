@@ -1,133 +1,34 @@
+/**
+ *
+ * Ceal commons
+ *
+ */
 #pragma once
 
-#include <stdint.h> // uint32_t
-#include <vcruntime_string.h> // memset, ...
+#include "ceal_types.h"
 
-namespace CEAL {
-	
-	struct Buffer_T 
-	{
-		uint32_t ID;
-		inline operator uint32_t() const { return ID; }
-	};
-	
-	struct Source_T 
-	{
-		uint32_t ID;
-		inline operator uint32_t() const { return ID; }
-	};
-	
-	struct Group_T
-	{
-		uint32_t ID;
-		inline operator uint32_t() const { return ID; }
-	};
-	
-	struct CealVector3 
-	{
-		float X;
-		float Y;
-		float Z;
+#include <assert.h>
+#include <new>
 
-		constexpr CealVector3(float x, float y, float z) : X(x), Y(y), Z(z) {}
-		constexpr CealVector3(float* arrayf) : X(arrayf[0]), Y(arrayf[1]), Z(arrayf[2]) {}
-	};
+// MSVC only
+#ifdef _MSC_VER
+#   define CEAL_ASSERT(condition) if((condition) == false)  { assert(false); }
+#   define CEAL_VERIFY(condition) if((condition))           { assert(false); }
+#endif
 
-	enum Result_ : uint32_t 
-	{
-		Result_Failed = 0,
-		Result_Success = 1 << 0,
-		Result_FileNotFound = 1 << 1,
-		Result_InvalidFormat,
-		Result_InvalidValue,
-	};
-	
-	enum ContextFlags_ : uint32_t 
-	{
-		ContextFlags_None = 0,
-		ContextFlags_Enable3D = 1 << 0,
-		ContextFlags_Something = 1 << 1,
-	};
+extern CealAllocationCallback g_AllocationCallback;
 
-    enum SourceAttribute_ : uint32_t 
-	{
-		SourceAttribute_Volume = 0,
-		SourceAttribute_Pitch,
+// Memory allocators
+#define CEAL_MEM_ALLOC(__object) (__object*)g_AllocationCallback(nullptr, 0, sizeof(__object))
+#define CEAL_MEM_ALLOC_SIZE(__object, __size) (__object*)g_AllocationCallback(nullptr, 0, __size)
+#define CEAL_MEM_ARRAY_ALLOC(__object, __length) (__object*)g_AllocationCallback(nullptr, 0, sizeof(__object) * __length)
+#define CEAL_MEM_FREE(__pointer) g_AllocationCallback(__pointer, sizeof(*__pointer), 0)
+#define CEAL_MEM_FREE_SIZE(__object, __pointer) g_AllocationCallback(__pointer, sizeof(__object), 0)
+#define CEAL_MEM_ARRAY_FREE(__pointer, __length) g_AllocationCallback(__pointer, sizeof(*__pointer) * __length, 0)
 
-        SourceAttribute_OrientFrontX,
-        SourceAttribute_OrientFrontY,
-        SourceAttribute_OrientFrontZ,
-        SourceAttribute_OrientTopX,
-        SourceAttribute_OrientTopY,
-        SourceAttribute_OrientTopZ,
-        SourceAttribute_PositionX,
-        SourceAttribute_PositionY,
-        SourceAttribute_PositionZ,
-        SourceAttribute_VelocityX,
-        SourceAttribute_VelocityY,
-        SourceAttribute_VelocityZ,
+// Memory allocators that trigger the constuctor/destructors
+#define CEAL_NEW(__object) new(CEAL_MEM_ALLOC(__object))__object() 
+#define CEAL_DELETE(__object, __pointer) __pointer->~__object(); CEAL_MEM_FREE(__pointer)
 
-        SourceAttribute_MaxEnum
-    };
 
-    enum ListenerAttribute_ : uint32_t
-    {
-        ListenerAttribute_OrientFrontX = 0,
-        ListenerAttribute_OrientFrontY,
-        ListenerAttribute_OrientFrontZ,
-        ListenerAttribute_OrientTopX,
-        ListenerAttribute_OrientTopY,
-        ListenerAttribute_OrientTopZ,
-        ListenerAttribute_PositionX,
-        ListenerAttribute_PositionY,
-        ListenerAttribute_PositionZ,
-        ListenerAttribute_VelocityX,
-        ListenerAttribute_VelocityY,
-        ListenerAttribute_VelocityZ,
-
-        ListenerAttribute_MaxEnum,
-    };
-
-	// Flags and attributes
-	typedef uint32_t ContextFlags; // => ContextFlags_
-	typedef uint32_t SourceAttribute; // => SourceAttribute_ 
-	typedef uint32_t Result; // => Result_
-	typedef uint32_t ListenerAttribute; // => ListenerAttribute_
-
-    /**
-     * @brief Holds info about Wav audio
-     * @see http://soundfile.sapp.org/doc/WaveFormat/
-     */
-    struct AudioFile_Wav
-    {
-        uint32_t ChunkSize;
-
-        uint32_t FmtSize; // 16 for PCM
-        uint16_t AudioFormat;
-        uint16_t NumChannels;
-        uint32_t SampleRate;
-        uint32_t ByteRate;
-        uint16_t BlockAlign;
-        uint16_t BitsPerSample;
-
-        // if not PCM
-        uint16_t ExtraParamSize;
-
-        // Data
-        uint32_t DataSize;
-        uint32_t DataOffset;
-        uint8_t* Data;
-
-        AudioFile_Wav()
-        {
-            memset(this, 0, sizeof(AudioFile_Wav));
-        }
-    };
-}
-
-// =============================================================================
-//					                 Macros
-// =============================================================================
- 
-#define CEAL_INVALID_ID 0
 

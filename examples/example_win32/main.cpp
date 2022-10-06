@@ -1,28 +1,29 @@
 /*
- *
  * CEAL Windows example. 
- * This file serves purpose as a showcase for my library. Not the best implementation in the world but 
- * 
+ * This file serves purpose as a showcase for my library. 
  **/
 
-// =================================> Backend <==================================== //
-
-// #include "backends/ceal_win32_xaudio2.cpp" Typically you would put this into arbitrary .cpp file in your project to compile.
+// =================================> Backend <==================================== 
+// #include "backends/ceal_win32_xaudio2.cpp" NOTE: Typically you would put this into arbitrary .cpp file in your project to compile.
 #include "ceal.h"
 #include "ceal_loaders.h"
-
-// ================================================================================ //
+#include "ceal_debug.h"
+#include "backends/ceal_win32_xaudio2.h"
+#include <new>
+// ================================================================================ 
  
 // Ceal-ImGui showcase window
 #include "ceal_window.h"
 
+#include <assert.h>
 #include <iostream>
 
-// Convenient macros for debugging
-#define ASSERT(condition, msg) if((condition) == CEAL::Result_Failed) { std::cerr << msg << "\n"; __debugbreak(); }
+// Conveniente macros for debugging
+#define ASSERT(condition, msg) if((condition) == CealResult_Failed) { std::cerr << msg << "\n"; assert(false); }
 
-// Definitions
+// Declarations
 void CealDemoDraw();
+void ShowMenuBar();
 
 struct ListenerAttributes3D
 {
@@ -34,60 +35,66 @@ struct ListenerAttributes3D
 
 static ListenerAttributes3D s_ListenerConfig;
 
-static CEAL::Group_T s_Group;
+// Audio sources
+static CealSource s_SongSourceMono;
+static CealSource s_SongSourceStereo;
+static CealSource s_CheersSource;
 
-static CEAL::Source_T s_SongSourceMono;
-static CEAL::Buffer_T s_SongBufferMono;
-
-static CEAL::Source_T s_CheersSource;
-static CEAL::Buffer_T s_CheersBuffer;
-
-static CEAL::Source_T s_SongSourceStereo;
-static CEAL::Buffer_T s_SongBufferStereo;
+// Audio buffers
+static CealBuffer s_SongBufferMono;
+static CealBuffer s_SongBufferStereo;
+static CealBuffer s_CheersBuffer;
 
 int main()
 {
     // Creating audio context
-    CEAL::ContextFlags contextFlags = CEAL::ContextFlags_None;
-    CEAL::CreateContext(contextFlags); // TODO(Urby): Figure out what next
-
-    // Group is essential, you need atleast one
-    CEAL::CreateGroup(&s_Group);
+    ceal_context_create();
+    ceal_backend_win32_xaudio2_init(); 
 
     // Mono song
-    CEAL::AudioFile_Wav songAudioFile;
+    CealAudioFile_Wav songAudioFile;
     {
-        ASSERT(CEAL::LoadAudioFile_Wav("../assets/example_song_stereo.wav", &songAudioFile), "Failed to load file!");
-        CEAL::CreateBuffer(&s_SongBufferMono, &songAudioFile);
-        CEAL::CreateSource(&s_SongSourceMono, &songAudioFile, &s_Group);
+        ASSERT(ceal_audio_file_wav_load("../assets/example_song_stereo.wav", &songAudioFile), "Failed to load file!");
+        ceal_buffer_create(&s_SongBufferMono, &songAudioFile);
+        ceal_source_create(&s_SongSourceMono, &songAudioFile);
     }
 
-    CEAL::SetSourceFloat(&s_SongSourceMono, CEAL::SourceAttribute_Volume, 0.05f);
+    ceal_source_set_float(s_SongSourceMono, CealSourceAttribute_Volume, 0.05f);
 
     // Cheers
-    CEAL::AudioFile_Wav cheersAudioFile;
+    CealAudioFile_Wav cheersAudioFile;
     {
-        ASSERT(CEAL::LoadAudioFile_Wav("../assets/cheers.wav", &cheersAudioFile), "Failed to load file!");
-        CEAL::CreateBuffer(&s_CheersBuffer, &cheersAudioFile);
-        CEAL::CreateSource(&s_CheersSource, &cheersAudioFile, &s_Group);
+        ASSERT(ceal_audio_file_wav_load("../assets/cheers.wav", &cheersAudioFile), "Failed to load file!");
+        ceal_buffer_create(&s_CheersBuffer, &cheersAudioFile);
+        ceal_source_create(&s_CheersSource, &cheersAudioFile);
     }
 
     // Stereo song
-    CEAL::AudioFile_Wav songStereoAudioFile;
+    CealAudioFile_Wav songStereoAudioFile;
     {
-        ASSERT(CEAL::LoadAudioFile_Wav("../assets/example_song_stereo.wav", &songStereoAudioFile), "Failed to load file!");
-        CEAL::CreateBuffer(&s_SongBufferStereo, &songStereoAudioFile);
-        CEAL::CreateSource(&s_SongSourceStereo, &songStereoAudioFile, &s_Group);
+        ASSERT(ceal_audio_file_wav_load("../assets/example_song_stereo.wav", &songStereoAudioFile), "Failed to load file!");
+        ceal_buffer_create(&s_SongBufferStereo, &songStereoAudioFile);
+        ceal_source_create(&s_SongSourceStereo, &songStereoAudioFile);
     }
 
-    // Ceal demo window
-    CEAL::Window::InitWindow();
-    CEAL::Window::RegisterImGuiCallback(CealDemoDraw);
-    // Window loop
-    CEAL::Window::Run();
+    // Ceal demo window using ImGui
+    {
+        ceal_window_init();
+        ceal_window_register_callback_imgui(CealDemoDraw);
+        // Window loop
+        ceal_window_run();
+    }
 
-    // Do not forget to release memory.
-    CEAL::DestroyContext();
+    // Release memory
+    ceal_backend_win32_xaudio2_shutdown();
+    ceal_context_destroy();
+
+    // NOTE: CEAL do not release audiofile's data allocated from LoadAudioFile_Wav(...) to keep loading files and actual audio engine separate.
+    // It is recommended to release buffers after everything is shutdown.
+    ceal_audio_file_wav_free(&songAudioFile);
+    ceal_audio_file_wav_free(&cheersAudioFile);
+    ceal_audio_file_wav_free(&songStereoAudioFile);
+
     return 0;
 }
 
@@ -98,9 +105,9 @@ static void CealDemoDraw()
     if (ImGui::Checkbox("3D sound", &sound3D))
     {
         if(sound3D)
-            CEAL::SetContextFlags(CEAL::ContextFlags_Enable3D);
+            ceal_context_set_flags(CealContextFlags_Enable3D);
         else
-            CEAL::UnsetContextFlags(CEAL::ContextFlags_Enable3D);
+            ceal_context_unset_flags(CealContextFlags_Enable3D);
             
     }
 
@@ -109,65 +116,84 @@ static void CealDemoDraw()
     ImGui::Begin("Listener");
     if (ImGui::DragFloat3("Position", s_ListenerConfig.Position, 0.1f))
     {
-        CEAL::SetListenerFloat(CEAL::ListenerAttribute_PositionX, s_ListenerConfig.Position[0]);
-        CEAL::SetListenerFloat(CEAL::ListenerAttribute_PositionY, s_ListenerConfig.Position[1]);
-        CEAL::SetListenerFloat(CEAL::ListenerAttribute_PositionZ, s_ListenerConfig.Position[2]);
+        ceal_listener_set_float(CealListenerAttribute_PositionX, s_ListenerConfig.Position[0]);
+        ceal_listener_set_float(CealListenerAttribute_PositionY, s_ListenerConfig.Position[1]);
+        ceal_listener_set_float(CealListenerAttribute_PositionZ, s_ListenerConfig.Position[2]);
     }
 
     if (ImGui::DragFloat3("OrientFront", s_ListenerConfig.OrientFront, 0.1f))
     {
-        CEAL::SetListenerFloat(CEAL::ListenerAttribute_OrientFrontX, s_ListenerConfig.OrientFront[0]);
-        CEAL::SetListenerFloat(CEAL::ListenerAttribute_OrientFrontY, s_ListenerConfig.OrientFront[1]);
-        CEAL::SetListenerFloat(CEAL::ListenerAttribute_OrientFrontZ, s_ListenerConfig.OrientFront[2]);
+        ceal_listener_set_float(CealListenerAttribute_OrientFrontX, s_ListenerConfig.OrientFront[0]);
+        ceal_listener_set_float(CealListenerAttribute_OrientFrontY, s_ListenerConfig.OrientFront[1]);
+        ceal_listener_set_float(CealListenerAttribute_OrientFrontZ, s_ListenerConfig.OrientFront[2]);
     }
 
     if (ImGui::DragFloat3("OrientTop", s_ListenerConfig.OrientTop, 0.1f))
     {
-        CEAL::SetListenerFloat(CEAL::ListenerAttribute_OrientTopX, s_ListenerConfig.OrientTop[0]);
-        CEAL::SetListenerFloat(CEAL::ListenerAttribute_OrientTopY, s_ListenerConfig.OrientTop[1]);
-        CEAL::SetListenerFloat(CEAL::ListenerAttribute_OrientTopZ, s_ListenerConfig.OrientTop[2]);
+        ceal_listener_set_float(CealListenerAttribute_OrientTopX, s_ListenerConfig.OrientTop[0]);
+        ceal_listener_set_float(CealListenerAttribute_OrientTopY, s_ListenerConfig.OrientTop[1]);
+        ceal_listener_set_float(CealListenerAttribute_OrientTopZ, s_ListenerConfig.OrientTop[2]);
     }
     ImGui::End();
 
     ImGui::Begin("Song Source #1");
 
-    //ImGui::DragFloat4("Matrix", g_CealStats.Matrix4x1, 0.1f);
-    //ImGui::DragFloat("Doppler Factor", &g_CealStats.DopplerFactor, 0.1f);
-    //ImGui::DragFloat("LPFDirectCoefficient", &g_CealStats.LPFDirectCoefficient, 0.1f);
-    //ImGui::Separator();
-
     static float s_Gain = 0.01f;
     static float s_Pitch = 1.0f;
 
-    if (ImGui::Button("Play audio!", { 50, 50 }))
+    if (ImGui::Button("Play audio!", { 100, 50 }))
     {
-        CEAL::SubmitBuffer(&s_SongSourceMono, &s_SongBufferMono);
-        CEAL::Play(&s_SongSourceMono);
+        ceal_buffer_submit(s_SongSourceMono, s_SongBufferMono);
+        ceal_source_play(s_SongSourceMono);
     }
 
+/*
     if (ImGui::Button("Stream audio!", { 50, 50 }))
     {
-        CEAL::CreateStream(&s_SongSourceMono, "../assets/example_streaming.wav");
-        CEAL::PlayStream(&s_SongSourceMono);
-    }
+        ceal_source_stream_create(s_SongSourceMono, "../assets/example_streaming.wav");
+        ceal_source_stream_play(s_SongSourceMono);
+    }*/
 
     if (ImGui::DragFloat("Volume", &s_Gain, 0.01f, 0.0f, 1.0f))
     {
-        CEAL::SetSourceFloat(&s_SongSourceMono, CEAL::SourceAttribute_Volume, s_Gain);
+        ceal_source_set_float(s_SongSourceMono, CealSourceAttribute_Volume, s_Gain);
     }
 
     if (ImGui::DragFloat("Pitch", &s_Pitch, 0.01f, 0.0f, 2.0f))
     {
-        CEAL::SetSourceFloat(&s_SongSourceMono, CEAL::SourceAttribute_Pitch, s_Pitch);
+        ceal_source_set_float(s_SongSourceMono, CealSourceAttribute_Pitch, s_Pitch);
     }
 
     ImGui::End();
 
-    // CEAL Perfomance
+    // Menu bar for interactive showcase
+    ShowMenuBar();
 
-    ImGui::Begin("Performance");
-    //ImGui::Text("Update: %.3f ms", g_CealStats.UpdateFuncMs);
-    ImGui::End();
+    ASSERT(ceal_context_update(), "Update failed!");
+}
 
-    ASSERT(CEAL::Update(), "Update failed!");
+void ShowMenuBar()
+{
+    if (ImGui::BeginMainMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("New source...")) // TODO(Urby): Create interactive demo example
+            {
+
+            }
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Edit"))
+        {
+            if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+            if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+            ImGui::Separator();
+            if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+            if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+            if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
 }

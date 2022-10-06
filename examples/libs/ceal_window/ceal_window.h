@@ -2,8 +2,6 @@
 
 #include "imgui.h"
 
-namespace CEAL::Window {
-    void InitWindow();
-    void Run();
-    void RegisterImGuiCallback(void (*function)());
-}
+void ceal_window_init();
+void ceal_window_run();
+void ceal_window_register_callback_imgui(void (*function)());

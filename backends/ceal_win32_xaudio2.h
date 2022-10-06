@@ -1,125 +1,20 @@
 #pragma once
 
-#include "ceal.h"
-
-#include <vector>
-#include <unordered_map>
-#include <thread>
-
-#include <xaudio2.h>
-#include <xaudio2fx.h>
-#include <x3daudio.h>
-#pragma comment(lib,"xaudio2.lib") // TODO(Urby): Move this to .cpp file
-
-namespace CEAL {
+#include "ceal_types.h"
 
 // =============================================================================
-//                             Forward declarations
+//									  Functions
 // =============================================================================
 
-    struct SourceDetails;
+/**
+ * @brief Creates Windows-XAudio2 audio backend.
+ * @param flags Flags of the context.
+ * @return CealResult
+ */
+CealResult ceal_backend_win32_xaudio2_init();
 
-// =============================================================================
-//                                  Callbacks
-// =============================================================================
- 
-    class SourceVoiceCallback : public IXAudio2VoiceCallback
-    {
-    public:
-        SourceVoiceCallback(SourceDetails* sourceDetails);
-        ~SourceVoiceCallback();
-
-        HANDLE GetBufferEndEvent() const { return m_BufferEndEvent; }
-
-    protected:
-        void OnBufferStart(void* pBufferContext);
-        void OnBufferEnd(void* pBufferContext);
-
-        void OnVoiceProcessingPassStart(UINT32 bytesRequired) {}
-        void OnVoiceProcessingPassEnd() {};
-
-        void OnStreamEnd();
-        void OnLoopEnd(void* pBufferContext);
-
-        void OnVoiceError(void* pBufferContext, HRESULT error);
-    private:
-        SourceDetails* m_SourceDetails;
-        HANDLE m_BufferEndEvent;
-    };
-
-
-    class XAudio2DebuggerCallback : public IXAudio2EngineCallback
-    {
-        void OnProcessingPassEnd();
-        void OnProcessingPassStart();
-        void OnCriticalError(HRESULT error);
-    };
-
-    struct SourceDetails
-    {
-        SourceDetails() : Callback(this) {};
-        SourceDetails(const SourceDetails&) = default;
-
-        Group_T Group{ CEAL_INVALID_ID };
-
-        uint32_t ChannelCount;
-        float CurveDistanceScaler;
-        float ChannelRadius;
-
-        float Attributes[SourceAttribute_MaxEnum];
-
-        IXAudio2SourceVoice* XSourceVoice;
-        SourceVoiceCallback Callback;
-
-        // Streaming
-        struct StreamData_
-        {
-            bool Streaming{ false };
-            std::thread Thread;
-            const char* Filepath;
-            uint32_t BufferMaxSize;
-            uint32_t BufferMaxCount;
-        } StreamData;
-    };
-
-    struct GroupDetails
-    {
-        std::vector<uint32_t> SourceIDs;
-
-        //IXAudio2SubmixVoice* XSubmixVoice;
-    };
-
-    struct MasterVoiceDetails {
-        XAUDIO2_VOICE_DETAILS Details;
-        DWORD ChannelMask;
-    };
-
-    struct CealContext {
-        // XAudio2 objects
-        IXAudio2* XInstance;                                        // Handle to XAudio2's instance
-        IXAudio2MasteringVoice* XMasterVoice;                       // Handle to XAudio2's mastering voice
-        MasterVoiceDetails MasterDetails;                           // Audio device info / Mastering voice info
-        X3DAUDIO_HANDLE X3DInstance;                                // Handle to X3DAudio
-
-        float ListenerAttributes[ListenerAttribute_MaxEnum];        // Listener's space attributes.
-
-        uint32_t GlobalIncrementId;                                 // Global variable keeping track. Increments when a new ceal object is created.
-        
-        std::unordered_map<uint32_t, XAUDIO2_BUFFER> XBufferMap;    // Buffers
-        std::unordered_map<uint32_t, SourceDetails> SourceMap;      // Sources
-        std::unordered_map<uint32_t, GroupDetails> GroupMap;        // Groups
-
-        ContextFlags Flags;                                         // Context Flags
-
-        XAudio2DebuggerCallback Debugger;                                   // Debugging
-
-        // Multithreading
-        bool IsClosing;
-        HANDLE ExitEventHandle;
-
-        void* UserPointer;
-    };
-
-    extern inline CealContext* g_CealContext = nullptr;
-
-} // namespace Ceal
+/**
+ * @brief Destroys Windows-XAudio2 backend.
+ * @return CealResult
+ */
+CealResult ceal_backend_win32_xaudio2_shutdown();
