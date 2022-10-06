@@ -43,7 +43,6 @@ CealResult ceal_context_update();
   * @brief Creates source. Source is usually what you want to store somewhere in order to manipulate audio.
   * @param source ID of the source.
   * @param audioFile Struct populated with audio file information.
-  * @param group ID of the group. Zero means source will not be part of any group.
   * @return CealResult
   */
 CealResult ceal_source_create(CealSource* source, const CealAudioFile_Wav* audioFile); 
