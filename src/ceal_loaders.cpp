@@ -13,9 +13,6 @@
 
 /**
  * @brief Loads WAVE audio file from disk. Does allocate memory.
- * @param filepath Filepath to audio file.
- * @param audioFile Audio File struct to be populated with audio info.
- * @return CaResult
  */
 CealResult ceal_audio_file_wav_load(const char* filepath, CealAudioFile_Wav* audioFile)
 {
@@ -63,12 +60,21 @@ CealResult ceal_audio_file_wav_load(const char* filepath, CealAudioFile_Wav* aud
 }
 
 /**
- * @brief Reads audio file and populates AudioFile_Wav struct. Does not allocate memory.
- * @param filepath Filepath to audio file.
- * @param audioFile Audio File struct to be populated with audio info.
- * @return CaResult
+ * @brief Releases memory from audio file struct. Note that deleting pointer to AudioFile_Wav.Data will also do the trick.
  */
-CealResult ceal_audio_file_wav_get_info(const char* filepath, CealAudioFile_Wav* audioFile)
+CealResult ceal_audio_file_wav_free(const CealAudioFile_Wav* audioFile)
+{
+    CEAL_ASSERT(audioFile);         // Invalid audio file!
+    CEAL_ASSERT(audioFile->Data);   // Data do not point to any allocated memory! Note: ceal_audio_file_wav_get_info(...) do not allocate memory.
+    delete audioFile->Data;
+
+    return CealResult_Success;
+}
+
+/**
+ * @brief Reads audio file and populates AudioFile_Wav struct. Does not allocate memory.
+ */
+CealResult ceal_audio_file_wav_info(const char* filepath, CealAudioFile_Wav* audioFile)
 {
     FILE* fileStream = fopen(filepath, "rb");
 
@@ -102,15 +108,6 @@ CealResult ceal_audio_file_wav_get_info(const char* filepath, CealAudioFile_Wav*
 
     // Closing stream
     fclose(fileStream);
-
-    return CealResult_Success;
-}
-
-CealResult ceal_audio_file_wav_free(const CealAudioFile_Wav* audioFile)
-{
-    CEAL_ASSERT(audioFile);         // Invalid audio file!
-    CEAL_ASSERT(audioFile->Data);   // Data do not point to any allocated memory! Note: ceal_audio_file_wav_get_info(...) do not allocate memory.
-    delete audioFile->Data;
 
     return CealResult_Success;
 }

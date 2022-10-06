@@ -508,7 +508,7 @@ void ceal_internal_stream_function(CealSource source) // TODO: Simplify
     uint32_t                cbWaveSize = 0;                                         // Size in bytes
     BYTE** buffers =        (BYTE**)(source->StreamData.Buffers);
 
-    ceal_audio_file_wav_get_info(source->StreamData.Filepath, &audioFileInfo);      // Retrieves info about audio file.
+    ceal_audio_file_wav_info(source->StreamData.Filepath, &audioFileInfo);      // Retrieves info about audio file.
     cbWaveSize = audioFileInfo.DataSize;
 
     OVERLAPPED overlapped{};

@@ -114,3 +114,7 @@ struct CealAudioFile_Wav
         memset(this, 0, sizeof(CealAudioFile_Wav));
     }
 };
+
+// Forward declarations
+typedef struct CealSource_T* CealSource;
+typedef struct CealBuffer_T* CealBuffer;

@@ -147,18 +147,6 @@ CealResult ceal_context_destroy()
     CEAL_MEM_FREE(g_GlobalContext->SourceBase);
     CEAL_MEM_FREE(g_GlobalContext->BufferBase);
 
-   /* // Release sources
-    for (auto& source : g_GlobalContext->Sources)
-    {
-        CEAL_MEM_FREE(source);
-    }*/
-
-   /* // Release buffers
-    for (auto& buffer : g_GlobalContext->Buffers)
-    {
-        CEAL_MEM_FREE(buffer);
-    }*/
-
     // Release global context
     CEAL_DELETE(CealGlobalContext, g_GlobalContext);
 
@@ -169,24 +157,16 @@ CealResult ceal_context_destroy()
 }
 
 /**
- * @brief Creates buffer from file.
+ * @brief Updates Context. Call this function every frame.
  */
-CealResult ceal_buffer_create(CealBuffer* buffer, const CealAudioFile_Wav* audioFile)
+CealResult ceal_context_update()
 {
-    // Populating XAUDIO2_BUFFER structure
-    *buffer = CEAL_NEW(CealBuffer_T);
-
-    g_GlobalContext->BufferBase[g_GlobalContext->BufferSize++] = *buffer;
-
-    auto& bufferPtr = *buffer;
-    bufferPtr->Size = audioFile->DataSize;	    // Size of the audio buffer in bytes
-    bufferPtr->Buffer = audioFile->Data;		// Buffer containing audio data
-
-    return ceal_internal_buffer_create(bufferPtr, audioFile);
+    CEAL_ASSERT(ceal_internal_context_update()); // ERR!
+    return CealResult_Success;
 }
 
 /**
- * @brief Creates source.
+ * @brief Creates source. Source is usually what you want to store somewhere in order to manipulate audio.
  */
 CealResult ceal_source_create(CealSource* source, const CealAudioFile_Wav* audioFile)
 {
@@ -224,27 +204,28 @@ CealResult ceal_source_play(CealSource source)
 }
 
 /**
+ * @brief Creates buffer from file.
+ */
+CealResult ceal_buffer_create(CealBuffer* buffer, const CealAudioFile_Wav* audioFile)
+{
+    // Populating XAUDIO2_BUFFER structure
+    *buffer = CEAL_NEW(CealBuffer_T);
+
+    g_GlobalContext->BufferBase[g_GlobalContext->BufferSize++] = *buffer;
+
+    auto& bufferPtr = *buffer;
+    bufferPtr->Size = audioFile->DataSize;	    // Size of the audio buffer in bytes
+    bufferPtr->Buffer = audioFile->Data;		// Buffer containing audio data
+
+    return ceal_internal_buffer_create(bufferPtr, audioFile);
+}
+
+/**
  * @brief Submits buffer to specified source.
  */
 CealResult ceal_buffer_submit(CealSource source, CealBuffer buffer)
 {
     return ceal_internal_buffer_submit(source, buffer);
-}
-
-/**
- * @brief Sets context flags.
- */
-void ceal_context_set_flags(CealContextFlags flags)
-{
-    g_GlobalContext->Flags |= flags;
-}
-
-/**
- * @brief Unsets context flags.
- */
-void ceal_context_unset_flags(CealContextFlags flags)
-{
-    g_GlobalContext->Flags &= ~flags;
 }
 
 /**
@@ -280,20 +261,27 @@ void ceal_source_set_float(CealSource source, CealSourceAttribute attribute, flo
 }
 
 /**
+ * @brief Sets context flags.
+ */
+void ceal_context_set_flags(CealContextFlags flags)
+{
+    g_GlobalContext->Flags |= flags;
+}
+
+/**
+ * @brief Unsets context flags.
+ */
+void ceal_context_unset_flags(CealContextFlags flags)
+{
+    g_GlobalContext->Flags &= ~flags;
+}
+
+/**
  * @brief Updates listeners attribute.
  */
 void ceal_listener_set_float(CealListenerAttribute attribute, float value)
 {
     g_GlobalContext->ListenerAttributes[attribute] = value;
-}
-
-/**
- * @brief Updates Context. Call this function every frame.
- */
-CealResult ceal_context_update()
-{
-    CEAL_ASSERT(ceal_internal_context_update());
-    return CealResult_Success;
 }
 
 // =============================================================================

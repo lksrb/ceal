@@ -1,6 +1,8 @@
 /*
  * CEAL Windows example. 
  * This file serves purpose as a showcase for my library. 
+ * 
+ * Welcome to this nice audiovisual demo! Hit F5.
  **/
 
 // =================================> Backend <==================================== 

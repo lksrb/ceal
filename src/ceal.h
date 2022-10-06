@@ -1,21 +1,14 @@
-/**
- *
- * Client API code
- *
- */
+//
+// =============================================================================
+//                                  CLIENTS API
+// =============================================================================
+//
 #pragma once
 
 #include "ceal_types.h"
 
 // =============================================================================
-//						         Forward Declarations
-// =============================================================================
-
-typedef struct CealSource_T* CealSource;
-typedef struct CealBuffer_T* CealBuffer;
-
-// =============================================================================
-//									  Functions
+//									Functions
 // =============================================================================
 
 /**
@@ -40,34 +33,14 @@ CealResult ceal_context_create(CealContextFlags flags, CealAllocationCallback ca
 CealResult ceal_context_destroy();
 
 /**
- * @brief Sets user specific pointer to custom user data.
- * @param userPointer
- */
-void ceal_user_pointer_set(void* userPointer);
-/**
- * @brief Gets user specific pointer to custom user data.
- * @param userPointer
- */
-void ceal_user_pointer_get(void* userPointer); 
-
-/**
- * @brief Creates buffer from file.
- * @param buffer ID of the buffer.
- * @param audioFile Struct populated with audio file information.
+ * @brief Updates Context. Call this function every frame.
+ * Note that source's pitch will be overridden when spatial sound is enabled.
  * @return CealResult
  */
-CealResult ceal_buffer_create(CealBuffer* buffer, const CealAudioFile_Wav* audioFile); 
-
-/**
- * @brief Submits buffer to specified source.
- * @param source ID of the source.
- * @param buffer ID of the buffer.
- * @return CealResult
- */
-CealResult ceal_buffer_submit(CealSource source, CealBuffer buffer);
+CealResult ceal_context_update();
 
  /**
-  * @brief Creates source.
+  * @brief Creates source. Source is usually what you want to store somewhere in order to manipulate audio.
   * @param source ID of the source.
   * @param audioFile Struct populated with audio file information.
   * @param group ID of the group. Zero means source will not be part of any group.
@@ -83,12 +56,31 @@ CealResult ceal_source_create(CealSource* source, const CealAudioFile_Wav* audio
 CealResult ceal_source_play(CealSource source);
 
 /**
- * @brief Query for source's attribute.
- * @param source ID of the source.
- * @param attribute Source's attribute.
- * @param value Value of the attribute.
+ * @brief Creates buffer from file.
+ * @param buffer ID of the buffer.
+ * @param audioFile Struct populated with audio file information.
+ * @return CealResult
  */
-void ceal_source_get_float(CealSource source, CealSourceAttribute attribute, float* value);
+CealResult ceal_buffer_create(CealBuffer* buffer, const CealAudioFile_Wav* audioFile);
+
+/**
+ * @brief Submits buffer to specified source.
+ * @param source ID of the source.
+ * @param buffer ID of the buffer.
+ * @return CealResult
+ */
+CealResult ceal_buffer_submit(CealSource source, CealBuffer buffer);
+
+/**
+ * @brief Sets user specific pointer to custom user data.
+ * @param userPointer
+ */
+void ceal_user_pointer_set(void* userPointer);
+/**
+ * @brief Gets user specific pointer to custom user data.
+ * @param userPointer
+ */
+void ceal_user_pointer_get(void* userPointer);
 
 /**
  * @brief Updates source attribute.
@@ -100,11 +92,12 @@ void ceal_source_get_float(CealSource source, CealSourceAttribute attribute, flo
 void ceal_source_set_float(CealSource source, CealSourceAttribute attribute, float value);
 
 /**
- * @brief Updates listeners attribute.
- * @param attribute Attribute to be changed.
- * @param value New value of the attribute.
+ * @brief Query for source's attribute.
+ * @param source ID of the source.
+ * @param attribute Source's attribute.
+ * @param value Value of the attribute.
  */
-void ceal_listener_set_float(CealListenerAttribute attribute, float value);
+void ceal_source_get_float(CealSource source, CealSourceAttribute attribute, float* value);
 
  /**
   * @brief Sets context flags.
@@ -121,11 +114,11 @@ void ceal_context_set_flags(CealContextFlags flags);
 void ceal_context_unset_flags(CealContextFlags flags);
 
 /**
- * @brief Updates Context. Call this function every frame.
- * Note that source's pitch will be overridden when spatial sound is enabled.
- * @return CealResult
+ * @brief Updates listeners attribute.
+ * @param attribute Attribute to be changed.
+ * @param value New value of the attribute.
  */
-CealResult ceal_context_update();
+void ceal_listener_set_float(CealListenerAttribute attribute, float value);
 
 // =============================================================================
 //                                  Streaming
