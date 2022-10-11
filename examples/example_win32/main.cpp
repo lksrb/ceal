@@ -11,7 +11,6 @@
 #include "ceal_loaders.h"
 #include "ceal_debug.h"
 #include "backends/ceal_win32_xaudio2.h"
-#include <new>
 // ================================================================================ 
  
 // Ceal-ImGui showcase window
@@ -77,6 +76,15 @@ int main()
         ASSERT(ceal_audio_file_wav_load("../assets/example_song_stereo.wav", &songStereoAudioFile), "Failed to load file!");
         ceal_buffer_create(&s_SongBufferStereo, &songStereoAudioFile);
         ceal_source_create(&s_SongSourceStereo, &songStereoAudioFile);
+    }
+    // Another song!
+    CealAudioFile_Wav songAnotherAF;
+    {
+        CealSource source;
+        CealBuffer buffer;
+        ASSERT(ceal_audio_file_wav_load("../assets/example_song_stereo.wav", &songAnotherAF), "Failed to load file!");
+        ceal_buffer_create(&buffer, &songAnotherAF);
+        ceal_source_create(&source, &songAnotherAF);
     }
 
     // Ceal demo window using ImGui

@@ -14,7 +14,7 @@
 #include <xaudio2.h>
 #include <xaudio2fx.h>
 #include <x3daudio.h>
-#pragma comment(lib,"xaudio2.lib") // TODO(Urby): Move this to .cpp file
+#pragma comment(lib,"xaudio2.lib")
 
 #include <math.h>
 
@@ -44,7 +44,7 @@
 #define BACK_RIGHT_AZIMUTH      3 * X3DAUDIO_PI / 4
 #define BACK_CENTER_AZIMUTH     X3DAUDIO_PI
 
-static constexpr float s_ChannelAzimuths[9][8] =
+static const float s_ChannelAzimuths[9][8] =
 {
     /* 0 */   { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
     /* 1 */   { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
@@ -151,33 +151,34 @@ private:
 struct XAudio2_Win32_Backend
 {
     // XAudio2 objects
-    IXAudio2* XInstance;                                        // Handle to XAudio2's instance
-    IXAudio2MasteringVoice* XMasterVoice;                       // Handle to XAudio2's mastering voice
-    XAUDIO2_VOICE_DETAILS Details;                              // Audio device Details
-    DWORD ChannelMask;                                          // Audio device channel mask
-    X3DAUDIO_HANDLE X3DInstance;                                // Handle to X3DAudio
-    XAudio2DebuggerCallback Debugger;                           // XAudio2 debugging
+    IXAudio2*                   XInstance;                              // Handle to XAudio2's instance
+    IXAudio2MasteringVoice*     XMasterVoice;                           // Handle to XAudio2's mastering voice
+    XAUDIO2_VOICE_DETAILS       Details;                                // Audio device Details
+    DWORD                       ChannelMask;                            // Audio device channel mask
+    X3DAUDIO_HANDLE             X3DInstance;                            // Handle to X3DAudio
+    XAudio2DebuggerCallback     Debugger;                               // XAudio2 debugging
 
-    //std::vector<SourceVoiceCallback> Callbacks;                 // TODO(Urby): Figure out how to setup callbacks for audio streaming.
+    //std::vector<SourceVoiceCallback> Callbacks;                       // TODO(Urby): Figure out how to setup callbacks for audio streaming.
 
-    std::unordered_map<CealBuffer, XAUDIO2_BUFFER> XBufferMap;    // Buffers
-    std::unordered_map<CealSource, IXAudio2SourceVoice*> XSourceMap;      // Sources
+    std::unordered_map<CealBuffer, XAUDIO2_BUFFER> XBufferMap;          // Buffers
+    std::unordered_map<CealSource, IXAudio2SourceVoice*> XSourceMap;    // Sources
 
-    // Multithreading
+    // Multithreading // Should be in separate context
     bool IsClosing;
     HANDLE ExitEventHandle;
 };
 
-static inline XAudio2_Win32_Backend* s_XAudio2Win32_Backend = nullptr;
+static XAudio2_Win32_Backend* s_XAudio2Win32_Backend = nullptr; // TODO: Separate win32 and xaudio2 context
 
 // =============================================================================
 //					  Functions for internal use only.
 // =============================================================================
-    /**
-     * @brief Setups utils for debugging XAudio2.
-     * @see https://docs.microsoft.com/en-us/windows/win32/xaudio2/debugging-facilities
-     * @return Ceal::Result
-     */
+
+/**
+ * @brief Setups utils for debugging XAudio2.
+ * @see https://docs.microsoft.com/en-us/windows/win32/xaudio2/debugging-facilities
+ * @return Ceal::Result
+ */
 static CealResult ceal_internal_win32_xaudio2_debug_setup()
 {
     XAUDIO2_DEBUG_CONFIGURATION debugConf{};
@@ -347,7 +348,7 @@ CealResult ceal_backend_win32_xaudio2_shutdown()
 }
 
 // =============================================================================
-//									  Functions
+//								Defined Functions
 // =============================================================================
 
 /**
